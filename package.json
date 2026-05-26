@@ -1,0 +1,12 @@
+{
+  "name": "scared-patient",
+  "version": "1.0.0",
+  "description": "Scared Patient E2E Test Suite",
+  "main": "verify_game.js",
+  "scripts": {
+    "test": "node verify_game.js"
+  },
+  "devDependencies": {
+    "puppeteer": "^22.0.0"
+  }
+}
