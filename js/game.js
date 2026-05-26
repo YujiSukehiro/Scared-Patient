@@ -306,24 +306,37 @@ class Game {
       const timeoutId = setTimeout(() => controller.abort(), 5000);
 
       try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbxEcmKfj9-Tg5K9QlM1-LXAwycNaplQNBtrELz_qQt5LDkL27BmfntC-RnmNatfJPKs/exec?game=Scared%20Patient', {
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const fetchOptions = {
           method: 'POST',
           signal: controller.signal,
-          headers: {
-            'Content-Type': 'application/json'
-          },
           body: JSON.stringify(scoreData)
-        });
+        };
+
+        if (isLocalhost) {
+          fetchOptions.headers = {
+            'Content-Type': 'application/json'
+          };
+        } else {
+          fetchOptions.mode = 'no-cors';
+          fetchOptions.headers = {
+            'Content-Type': 'text/plain'
+          };
+        }
+
+        const response = await fetch('https://script.google.com/macros/s/AKfycbxEcmKfj9-Tg5K9QlM1-LXAwycNaplQNBtrELz_qQt5LDkL27BmfntC-RnmNatfJPKs/exec', fetchOptions);
 
         clearTimeout(timeoutId);
 
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        if (isLocalhost) {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
 
-        const result = await response.json();
-        if (result.status !== 'success') {
-          throw new Error('API returned failure status');
+          const result = await response.json();
+          if (result.status !== 'success') {
+            throw new Error('API returned failure status');
+          }
         }
 
         this.saveLocalScore(scoreData);
